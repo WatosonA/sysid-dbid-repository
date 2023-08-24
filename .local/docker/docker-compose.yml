@@ -1,0 +1,38 @@
+version: '3.9'
+
+services:
+  mysql:
+    container_name: testdb
+    image: mysql:8.0.27
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: maindb
+      MYSQL_USER: webapp
+      MYSQL_PASSWORD: webapp
+      TZ: 'Asia/Tokyo'
+    volumes:
+      - ./my.conf:/etc/mysql/conf.d/my.cnf
+      - ./initdb.d/:/docker-entrypoint-initdb.d
+    ports:
+      - 3306:3306
+    networks:
+      - mysql-network
+
+  # phpMyAdmin
+  phpmyadmin:
+    container_name: phpmyadmin
+    image: phpmyadmin/phpmyadmin
+    environment:
+      PMA_ARBITRARY: 1
+      PMA_HOSTS: testdb
+      PMA_USER: root
+      PMA_PASSWORD: root
+      TZ: 'Asia/Tokyo'
+    ports:
+      - 8089:80
+    networks:
+      - mysql-network
+
+networks:
+  mysql-network:
+    driver: bridge
