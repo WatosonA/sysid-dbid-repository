@@ -182,6 +182,9 @@ domaCodeGen {
     }
 }
 
+bootJar {
+    enabled = false
+}
 publishing {
     publications {
         maven(MavenPublication) {
