@@ -53,7 +53,7 @@ jobs:
       - name: Setup Test DB
         run: |
           cd .local/docker
-          docker-compose up -d testdb
+          docker-compose up -d
           cd ../..
           ./gradlew flywayMigrate_testdb
       - name: Build & Test & Get coverage & Sonar scan
