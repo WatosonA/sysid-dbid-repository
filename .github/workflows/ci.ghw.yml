@@ -19,8 +19,8 @@ jobs:
           java-version: 17
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
-      - name: Build & Test & Get coverage & Sonar scan --scan
-        run: ./gradlew build test jacocoTestReport sonar -Dsonar.host.url=$SONAR_URL -Dsonar.organization=watosona
+      - name: Build & Test & Get coverage & Sonar scan
+        run: ./gradlew build test jacocoTestReport sonar -Dsonar.host.url=$SONAR_URL -Dsonar.organization=watosona -Dsonar.token=$SONAR_TOKEN --scan
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
