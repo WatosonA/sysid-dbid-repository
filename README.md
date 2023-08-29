@@ -8,6 +8,13 @@
 ## Requirements
 - JDK 17
 
+## Features
+- Spring Boot 3
+- Doma2
+- Flyway
+- SonarCloud
+- GitHub Actions workflow
+
 ## Quick Start
 
 ### ローカル環境での起動方法

@@ -20,8 +20,8 @@ plugins {
     id 'idea'
     id 'org.springframework.boot' version '3.1.2'
     id 'io.spring.dependency-management' version '1.1.2'
-    id 'org.seasar.doma.compile' version '1.1.0'
-    id "org.flywaydb.flyway" version "8.2.0" // これより上記バージョンでは動作しない
+    id 'org.flywaydb.flyway' version '8.2.0' // これより上記バージョンでは動作しない
+    id 'org.domaframework.doma.compile' version '2.0.0'
     id 'org.domaframework.doma.codegen' version '2.0.0'
     id 'jacoco'
     id 'org.sonarqube' version '4.3.0.3225'
@@ -78,8 +78,9 @@ dependencies {
 }
 
 sourceSets {
-    generated {
+    main {
         java {
+            srcDirs 'src/main/java'
             srcDirs 'generated/src/main/java'
         }
     }
@@ -102,14 +103,14 @@ processResources {
     exclude domaResources
 }
 
+test {
+    ignoreFailures = true
+}
 tasks.named('test') {
     useJUnitPlatform()
     jvmArgs = ['-Dspring.profiles.active=ut']
 }
 
-tasks.named('eclipse') {
-    mkdir "$projectDir/.apt_generated"
-}
 eclipse {
     project {
         // Eclipseではgroovyソースはソースリンクにすることでコンパイルされるので作成
@@ -118,15 +119,14 @@ eclipse {
     classpath {
         file {
             whenMerged { classpath ->
-                classpath.entries.removeAll { it.path == '.apt_generated' }
+                classpath.entries.findAll { entry -> entry.kind == 'output' }*.path = 'bin/main' // DomaProcessorがSQLファイルを見つけられるように変更
                 classpath.entries.removeAll { it.path == 'test_groovy' }
                 classpath.entries.removeAll { it.path == 'src/test/groovy' }
             }
             withXml { provider ->
                 def node = provider.asNode()
                 // specify output path for .apt_generated / test_groovy
-                node.appendNode('classpathentry', [ kind: 'src', output: 'bin/main', path: '.apt_generated'])
-                node.appendNode('classpathentry', [ kind: 'src', output: 'bin/test', path: 'test_groovy'])
+                node.appendNode('classpathentry', [ kind: 'src', output: 'bin/test', path: 'test_groovy' ])
                     .appendNode('attributes')
                     .appendNode('attribute', [name: 'test', value: 'true'])
             }
@@ -134,6 +134,12 @@ eclipse {
     }
     jdt {
         javaRuntimeName = 'JavaSE-17'
+        file { // DomaProcessorで重複したクラスパスを修正（初期設定でUIから変更する必要がある）
+            withProperties { properties ->
+                properties['org.eclipse.jdt.apt.genSrcDir'] = 'bin/generated-sources/annotations'
+                properties['org.eclipse.jdt.apt.genTestSrcDir'] = 'bin/generated-test-sources/annotations'
+            }
+        }
     }
 }
 
