@@ -20,10 +20,11 @@ jobs:
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
       - name: Build & Test & Get coverage & Sonar scan --scan
-        run: ./gradlew build test jacocoTestReport sonar -Dsonar.organization=watosona
+        run: ./gradlew build test jacocoTestReport sonar -Dsonar.host.url=$SONAR_URL -Dsonar.organization=watosona
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_URL: "https://sonarcloud.io/"
       - name: Upload build reports
         uses: actions/upload-artifact@v3
         with:
