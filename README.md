@@ -39,6 +39,12 @@ IDEまたはコマンドでtest
 ./gradlew test
 ```
 
+#### ローカルManveリポジトリにPublish
+IDEまたはコマンドでpublishMavenPublicationToMavenLocal
+```sh
+./gradlew publishMavenPublicationToMavenLocal
+```
+
 #### Eclipseの設定
 - メニューバーのEclipse > 設定... > Gradle で 自動的にプロジェクトを同期 のチェックを外す（Gradleの機能を使うためEclipsePluginはOFFにする）
 - GradleタスクViewerで、ide > eclipse のタスクを実行する（クラスパス等が設定される）
