@@ -40,9 +40,9 @@ IDEまたはコマンドでtest
 ```
 
 #### ローカルManveリポジトリにPublish
-IDEまたはコマンドでpublishMavenPublicationToMavenLocal
+IDEまたはコマンドでpublishToMavenLocal
 ```sh
-./gradlew publishMavenPublicationToMavenLocal
+./gradlew publishToMavenLocal
 ```
 
 #### Eclipseの設定

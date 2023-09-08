@@ -86,23 +86,6 @@ sourceSets {
     }
 }
 
-def domaResources = ['doma.compile.config', 'META-INF/**/*.sql', 'META-INF/**/*.script']
-
-tasks.register('copyDomaResourcesJava', Copy) {
-    from sourceSets.main.resources.srcDirs
-    into compileJava.destinationDirectory
-    include domaResources
-}
-
-compileJava {
-    options.encoding = 'UTF-8'
-    dependsOn copyDomaResourcesJava
-}
-
-processResources {
-    exclude domaResources
-}
-
 test {
     ignoreFailures = true
 }
@@ -116,9 +99,12 @@ jacocoTestReport {
     }
 }
 
+tasks.named('eclipse') {
+    mkdir '.apt_generated'
+}
 eclipse {
     project {
-        // Eclipseではgroovyソースはソースリンクにすることでコンパイルされるので作成
+        // Eclipseではgroovyソースはソースリンクにすることでコンパイルされるので作成が必要
         linkedResource name: 'test_groovy', type: '2', location: "$projectDir/src/test/groovy".toString()
     }
     classpath {
@@ -131,6 +117,7 @@ eclipse {
             withXml { provider ->
                 def node = provider.asNode()
                 // specify output path for .apt_generated / test_groovy
+                node.appendNode('classpathentry', [ kind: 'src', output: 'bin/main', path: '.apt_generated' ])
                 node.appendNode('classpathentry', [ kind: 'src', output: 'bin/test', path: 'test_groovy' ])
                     .appendNode('attributes')
                     .appendNode('attribute', [name: 'test', value: 'true'])
@@ -139,12 +126,6 @@ eclipse {
     }
     jdt {
         javaRuntimeName = 'JavaSE-17'
-        file { // DomaProcessorで重複したクラスパスを修正（初期設定でUIから変更する必要がある）
-            withProperties { properties ->
-                properties['org.eclipse.jdt.apt.genSrcDir'] = 'bin/generated-sources/annotations'
-                properties['org.eclipse.jdt.apt.genTestSrcDir'] = 'bin/generated-test-sources/annotations'
-            }
-        }
     }
 }
 
