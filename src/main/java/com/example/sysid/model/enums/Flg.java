@@ -3,10 +3,13 @@ package com.example.sysid.model.enums;
 import org.seasar.doma.Domain;
 import org.springframework.lang.NonNull;
 
+import lombok.Getter;
+
 /**
  * フラグ値のEnum。
  */
-@Domain(valueType = String.class, factoryMethod = "of", accessorMethod = "getCode")
+@Domain(valueType = String.class, factoryMethod = "of")
+@Getter
 public enum Flg {
 
     /** OFF */
@@ -15,15 +18,15 @@ public enum Flg {
     ON("1");
 
     /** コード */
-    private String code;
+    private String value;
 
     /**
      * コンストラクタ
      *
      * @param code コード
      */
-    private Flg(final String code) {
-        this.code = code;
+    private Flg(final String value) {
+        this.value = value;
     }
 
     public static Flg of(String code) {
@@ -31,7 +34,7 @@ public enum Flg {
             return null;
         }
         for (Flg valueType : Flg.values()) {
-            if (valueType.getCode().equals(code)) {
+            if (valueType.value.equals(code)) {
                 return valueType;
             }
         }
@@ -39,14 +42,9 @@ public enum Flg {
     }
 
     @NonNull
-    public String getCode() {
-        return code;
-    }
-
-    @NonNull
     @Override
     public String toString() {
-        return code;
+        return value;
     }
 
 }

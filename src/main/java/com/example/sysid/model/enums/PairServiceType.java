@@ -3,48 +3,36 @@ package com.example.sysid.model.enums;
 import org.seasar.doma.Domain;
 import org.springframework.lang.NonNull;
 
+import lombok.Getter;
+
 /**
  * 対向サービス区分
  */
-@Domain(factoryMethod = "of", valueType = String.class, accessorMethod = "getCode")
+@Domain(factoryMethod = "of", valueType = String.class)
+@Getter
 public enum PairServiceType {
 
     TBL("TBL", "食べログ"),
     GRV("GRV", "ぐるなび");
 
-    private String code;
+    private String value;
     private String display;
 
-    private PairServiceType(String code, String display) {
-        this.code = code;
+    private PairServiceType(String value, String display) {
+        this.value = value;
         this.display = display;
-    }
-
-    @NonNull
-    public String getCode() {
-        return code;
-    }
-
-    @NonNull
-    public String getDisplay() {
-        return display;
-    }
-
-    @NonNull
-    public String getName() {
-        return name();
     }
 
     @NonNull
     @Override
     public String toString() {
-        return code;
+        return value;
     }
 
     @NonNull
     public static PairServiceType of(String code) {
         for (PairServiceType value : PairServiceType.values()) {
-            if (value.code.equals(code)) {
+            if (value.value.equals(code)) {
                 return value;
             }
         }
