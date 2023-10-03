@@ -1,13 +1,15 @@
 package com.example.sysid.test.dbunit
 
-import java.time.ZoneId
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 
-import org.apache.commons.beanutils.BeanUtils
-import org.apache.commons.lang3.time.DateUtils
 import org.dbunit.dataset.Column
 import org.dbunit.dataset.DefaultDataSet
 import org.dbunit.dataset.DefaultTable
 import org.dbunit.dataset.datatype.DataType
+import org.seasar.doma.Domain
 
 import com.example.sysid.model.entity.IdAttach
 import com.example.sysid.model.entity.SetValueMst
@@ -30,10 +32,8 @@ class ComplementaryDataSet {
     /** デフォルトデータセット */
     static DefaultDataSet defaultDataSet = new DefaultDataSet()
     static {
-        def defaultUpdDate = DateUtils.parseDate("2023/01/01 01:01:01", "yyyy/MM/dd HH:mm:ss")
-                .toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
-        def defaultRegDate = DateUtils.parseDate("2023/01/01 01:01:01", "yyyy/MM/dd HH:mm:ss")
-                .toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+        LocalDateTime defaultDateTime = LocalDateTime.parse(
+                "2023-01-01 01:01:00.000", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS"))
         /*
          * defaultTableListに１レコード分のエンティティを定義
          */
@@ -45,12 +45,12 @@ class ComplementaryDataSet {
                     pairClientUserId = "CL999000"
                     accessToken = "at-xxxx"
                     pairAccessToken = "pat-xxxx"
-                    pairTokenValidDate = DateUtils.parseDate("2023/02/01 01:01:01", "yyyy/MM/dd HH:mm:ss")
-                            .toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+                    pairTokenValidDate = LocalDateTime.parse(
+                            "2023-01-01 01:01:00.000", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")).toLocalDate()
                     pairRefreshToken = "prt-xxxx"
-                    updDate = defaultUpdDate
+                    updDate = defaultDateTime.toLocalDate()
                     updApl = "test"
-                    regDate = defaultRegDate
+                    regDate = defaultDateTime.toLocalDate()
                     regApl = "test"
                     version = 1
                     pairTokenExpiredFlg = Flg.OFF
@@ -60,16 +60,16 @@ class ComplementaryDataSet {
                     setValueSeq = "0"
                     setValueKbn = "0000"
                     setValue = "0"
-                    updDate = defaultUpdDate
+                    updDate = defaultDateTime.toLocalDate()
                     updApl = "test"
-                    regDate = defaultRegDate
+                    regDate = defaultDateTime.toLocalDate()
                     regApl = "test"
                     version = 1
                 }
                 )
         // EntityからDataSetへ変換
         defaultTableList.each {
-            Map<String, Object> beanMap = BeanUtils.describe(it)
+            Map<String, Object> beanMap = describe(it)
             List<Column> colums = []
             List<?> values = []
             beanMap.entrySet().each { entry ->
@@ -83,5 +83,23 @@ class ComplementaryDataSet {
                     (colums as Column[]), new ArrayList().tap { it.add (values as Object[]) } )
             defaultDataSet.addTable(dataTable)
         }
+    }
+
+    private static Map<String, ?> describe(Object obj) {
+        Map<String, ?> beanMap = new HashMap<>()
+        obj.getClass().getDeclaredFields().each {
+            it.setAccessible(true)
+            def value = it.get(obj)
+            if (value != null) {
+                // Doma:DomainはDB定義型対応型へ変換
+                value = value.getClass().isAnnotationPresent(Domain.class) ? value.value : value
+                value = value.getClass() == LocalDateTime.class // java.sql.Timestampへの変換エラーが出てしまうため個別に変換
+                        ? ((LocalDateTime)value).toInstant(ZoneOffset.of("+9")).toEpochMilli() : value
+                value = value.getClass() == LocalDate.class // java.sql.Timestampへの変換エラーが出てしまうため個別に変換
+                        ? ((LocalDate)value).toEpochDay() : value
+                beanMap.put(it.getName(), value)
+            }
+        }
+        beanMap
     }
 }

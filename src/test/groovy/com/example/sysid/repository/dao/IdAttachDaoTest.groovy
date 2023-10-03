@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional
 import com.example.sysid.TestConfigration
 import com.example.sysid.test.spock.CustomSpecification
 import com.github.springtestdbunit.DbUnitTestExecutionListener
+import com.github.springtestdbunit.TransactionDbUnitTestExecutionListener
 
 import spock.lang.Stepwise
 import spock.lang.Unroll
@@ -31,7 +32,9 @@ import spock.lang.Unroll
 @Rollback
 @Stepwise
 @Unroll
-@TestExecutionListeners([ DependencyInjectionTestExecutionListener.class, DbUnitTestExecutionListener.class ])
+@TestExecutionListeners(
+[ DependencyInjectionTestExecutionListener.class, DbUnitTestExecutionListener.class, TransactionDbUnitTestExecutionListener.class ]
+)
 class IdAttachDaoTest extends CustomSpecification {
 
     @Autowired
