@@ -1,13 +1,6 @@
 spring:
   main:
     banner-mode: "off"
-  mail:
-    host: 127.0.0.1 # メールサーバ
-    port: 9025 # メールサーバポート
-    properties:
-      "[mail.smtp.auth]": false # メールサーバ認証無し
-      "[mail.smtp.starttls.enable]": true
-      "[mail.smtp.timeout]": 30000 # タイムアウト(ミリ秒)
   datasource:
     name: dataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -23,23 +16,18 @@ spring:
       connection-timeout: 5000
       validation-timeout: 5000
       leak-detection-threshold: 30000 # デバッグ用
-  mvc:
-    log-request-details: false
-    dispatch-trace-request: false
   security:
     user:
       name: junit
       password: junit
 
+logging:
+  level:
+    root: warn
+    org:
+      hibernate: warn
+
 doma:
   query-timeout: 5 # Number of seconds the driver will wait for a Statement object to execute. Ignored unless this value is greater than 0.
 
-springdoc:
-  api-docs:
-    enabled: false
-
-application:
-  accesskey:
-    checkDefault: false
-
-    # debug: true
+# debug: true

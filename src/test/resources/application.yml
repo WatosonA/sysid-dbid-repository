@@ -3,22 +3,11 @@ spring:
     default: ut
   main:
     allow-bean-definition-overriding: true
-  mvc:
-    throw-exception-if-no-handler-found: true # 404でも例外throw
-    log-resolved-exception: false # エラー発生時にorg.springframeworkパッケージでWARNログが自動出力されないようにする
-    hiddenmethod:
-      filter:
-        enabled: false # HiddenHttpMethodFilterを有効にする
   groovy:
     template:
       check-template-location: false
   jackson:
     default-property-inclusion: NON_NULL
-
-management:
-  health:
-    diskspace:
-      enabled: false
 
 doma:
   dialect: MYSQL
@@ -29,4 +18,4 @@ doma:
   batch-size: 1000 # Size in executing PreparedStatement#addBatch(). Regarded as 1 unless this value is greater than 1.
   data-source-name: default # Datasource name.
   exception-sql-log-type: FORMATTED # Type of SQL log in the exception. (RAW, FORMATTED, NONE)
-  jdbc-logger: JUL
+  jdbc-logger: SLF4J
