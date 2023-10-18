@@ -92,8 +92,31 @@ jacocoTestReport {
     }
 }
 
+// Eclipse/VSCodeで必要な設定ファイルを整備
 tasks.named('eclipse') {
     mkdir '.apt_generated'
+}
+tasks.eclipse.doFirst {
+    File prefs = file(".settings/org.eclipse.buildship.core.prefs")
+    if (!prefs.exists()) {
+        prefs.append('''
+            eclipse.preferences.version=1
+            connection.project.dir=
+            override.workspace.settings=false
+            '''.stripIndent())
+    }
+    prefs = file(".settings/org.eclipse.jdt.groovy.core.prefs")
+    if (!prefs.exists()) {
+        prefs.append('''
+            eclipse.preferences.version=1
+            groovy.compiler.level=40
+            '''.stripIndent())
+    }
+}
+tasks.eclipse.doLast {
+    File prefs = file(".settings/org.eclipse.jdt.apt.core.prefs")
+    def newPrefs = prefs.text.replace('org.eclipse.jdt.apt.aptEnabled=true', 'org.eclipse.jdt.apt.aptEnabled=false')
+    prefs.text = newPrefs
 }
 eclipse {
     project {
@@ -121,6 +144,13 @@ eclipse {
     }
     jdt {
         javaRuntimeName = 'JavaSE-17'
+        file {
+            // set properties for the file org.eclipse.jdt.core.prefs
+            withProperties { properties ->
+                // https://github.com/redhat-developer/vscode-java/issues/3243
+                properties['org.eclipse.jdt.core.compiler.codegen.methodParameters'] = 'generate'
+            }
+        }
     }
 }
 
